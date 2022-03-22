@@ -1,0 +1,11 @@
+services:
+  web:
+    build:
+      context: ..\
+    image: wingunt/taskmanagement.ui
+    ports:
+      - "8080:8080"
+
+    environment:
+      keykloak.loginpage: "https://keycloak-taskmanager-deveducate.apps.ocp.cmx.ru/auth/realms/uberpopug/protocol/openid-connect/auth?response_type=id_token token&redirect_uri={redirect_uri}&nonce={nonce}&client_id=taskmanager-auth&scope=openid roles"
+      server.port: "8080"
