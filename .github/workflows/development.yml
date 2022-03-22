@@ -3,3 +3,28 @@ name: Java developer
 on:
   push:
     branches: [ feature/* ]
+
+env:
+  DOCKER_NAMESPACE: ${{ secrets.DOCKER_USERNAME }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
+
+      - name: Docker login
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} docker.io
+      - name: Build docker repo
+        run: docker build -t ${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_REPOSITORY }}:dev-$GITHUB_RUN_NUMBER .
+      - name: Push to Docker Hub
+        run: docker push ${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_REPOSITORY }}:dev-$GITHUB_RUN_NUMBER

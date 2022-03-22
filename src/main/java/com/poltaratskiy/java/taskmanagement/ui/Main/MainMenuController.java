@@ -31,12 +31,6 @@ public class MainMenuController {
         // return view
         // Создать задачи, смотреть свои - все, ассайнить - только менеджеры и админы
 
-        var someProperty1 = environment.getProperty("someProperty");
-        var someProperty2 = environment.getProperty("some.property");
-
-        System.out.println("someProperty: " + someProperty1);
-        System.out.println("some.property: " + someProperty2);
-
         var accessToken = WebUtils.getCookie(request, "accessToken");
 
         if (accessToken == null) {
@@ -48,9 +42,6 @@ public class MainMenuController {
             keykloakLoginPage = keykloakLoginPage.replaceAll("\\{nonce}", nonce);
 
             System.out.println("Keykloak login page: " + keykloakLoginPage);
-
-            //response.setHeader("Location", keykloakLoginPage);
-            //response.setStatus(302);
             return "redirect:" + keykloakLoginPage;
         }
 
