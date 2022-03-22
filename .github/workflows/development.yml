@@ -6,6 +6,7 @@ on:
 
 env:
   DOCKER_NAMESPACE: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_REPOSITORY: java_tasktracker_ui
 
 jobs:
   build:
