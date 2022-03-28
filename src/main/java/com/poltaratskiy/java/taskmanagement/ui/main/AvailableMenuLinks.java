@@ -1,4 +1,4 @@
-package com.poltaratskiy.java.taskmanagement.ui.Main;
+package com.poltaratskiy.java.taskmanagement.ui.main;
 
 public class AvailableMenuLinks {
     boolean taskDashboard = false;
