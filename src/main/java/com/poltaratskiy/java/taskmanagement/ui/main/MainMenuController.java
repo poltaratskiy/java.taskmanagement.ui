@@ -24,7 +24,6 @@ public class MainMenuController {
     private String keykloakLoginPageTemplate;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    @PreAuthorize("hasRole('qwerty')")
     public String mainMenu(HttpServletRequest request, HttpServletResponse response, Model model) throws UnknownHostException {
         // check token and find role
         // return view
