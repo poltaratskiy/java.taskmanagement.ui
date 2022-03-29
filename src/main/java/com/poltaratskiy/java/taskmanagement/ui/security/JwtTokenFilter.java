@@ -1,6 +1,8 @@
 package com.poltaratskiy.java.taskmanagement.ui.security;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,7 +19,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.KeyFactory;
+import java.security.interfaces.ECPublicKey;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
@@ -34,14 +40,31 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         DecodedJWT jwt = null;
         try {
-            // Verification here...
+            // TODO: remove hardcode
+            var publicKeyString =
+                    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEkXqTV3e3AmKEGHTVW2p0VOEOwaVwou0HgHwlvetQiMbCuSu65CS0MRL/lOJvN5iKaWgL9ll352fRvxeM8zXV9A==";
+            var publicKeySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyString));
 
-            // Decoding
-            jwt = JWT.decode(accessToken);
+            var keyPairGenerator = KeyFactory.getInstance("EC");
+            var publicKey = keyPairGenerator.generatePublic(publicKeySpec);
+            var verifier = JWT.require(Algorithm.ECDSA256((ECPublicKey) publicKey, null)).build();
+
+            // Decoding and verifying
+            jwt = verifier.verify(accessToken);
+        }
+        catch (JWTVerificationException ex) {
+            System.out.println(ex.getMessage());
+
+            /* For future: redirect here doesn't work. Have to add filter after FilterSecurityInterceptor to overwrite
+               header 403 and redirect to login page if token is not valid. Or customize error page
+            response.setStatus(302);
+            response.setHeader("302", "/login");*/
+
+            filterChain.doFilter(request, response);
+            return;
         }
         catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            response.setHeader("303", "/login");
+            System.out.println("General exception: " + ex.getMessage());
             filterChain.doFilter(request, response);
             return;
         }
