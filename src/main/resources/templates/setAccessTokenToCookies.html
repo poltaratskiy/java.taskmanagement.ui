@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body onload="setCookies()">
+<script type="text/javascript">
+function setCookies() {
+    var currentUrl = document.URL,
+	urlParts   = currentUrl.split('#');
+	var anchorParts = urlParts[1].split('&');
+	var accessTokenParts = anchorParts[2]; // access_token=ey...
+	var accessToken = accessTokenParts.split('=')[1];
+	window.location.href = '/login/success/token?' + accessTokenParts;
+}
+</script>
+</body>
+</html>
